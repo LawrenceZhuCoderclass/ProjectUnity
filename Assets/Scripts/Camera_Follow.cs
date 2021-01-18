@@ -5,17 +5,26 @@ using UnityEngine;
 public class Camera_Follow : MonoBehaviour
 {
     public Transform player;
+    public Vector3 Offset;
+    [Range(1, 10)]
+    public float smoothFactor;
+    public Vector3 minValues, maxValue;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
     void LateUpdate()
+    { 
+        Follow();        
+    }
+    void Follow()
     {
-        // dit zorgt ervoor dat de camera de speler volgt
-        transform.position = new Vector3(player.position.x, player.position.y, transform.position.z);
+        Vector3 playerPosition = player.position + Offset;
+
+        Vector3 boundPosition = new Vector3(
+            Mathf.Clamp(playerPosition.x, minValues.x, maxValue.x),
+            Mathf.Clamp(playerPosition.y, minValues.y, maxValue.y),
+            Mathf.Clamp(playerPosition.z, minValues.z, maxValue.z));
+
+        Vector3 smoothPosition = Vector3.Lerp(transform.position, boundPosition,smoothFactor * Time.fixedDeltaTime);
+        transform.position = smoothPosition;
     }
 }
