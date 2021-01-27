@@ -8,12 +8,12 @@ using UnityEngine.UIElements;
 
 public class GameController : MonoBehaviour
 {
-    public TilemapRenderer Spikes;
+    
     public PlayerState playerState;
-    public GameOverScript GameOverScript;
-    public PauseScript PauseScript;
+    public  GameObject PauseScript;
     private Player_controller PlayerController;
-    public Background GameOverBackGround;
+    public GameObject GameOverBackGround;
+    
 
     public enum PlayerState
     {
@@ -28,18 +28,19 @@ public class GameController : MonoBehaviour
     }
     void Start()
     {
+        
+        GameObject PauseScript = GameObject.FindWithTag("Pause");
+        GameObject GameOverBackGround = GameObject.FindWithTag("GameOverBackGround");
         GameObject PlayerControllerObject = GameObject.FindWithTag("Player");
-        if (PlayerControllerObject != null)
-        {
-            PlayerController = PlayerControllerObject.GetComponent<Player_controller>();
-        }
+        PlayerController = PlayerControllerObject.GetComponent<Player_controller>();
+
+        
     }
     void Update()
     {
         switch (playerState)
         {
             case PlayerState.Alive:
-                Alive();
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
                     playerState = PlayerState.Paused;
@@ -54,39 +55,31 @@ public class GameController : MonoBehaviour
 
         }
     }
-    public void Alive()
-    {
-        Time.timeScale = 1f;
-        Debug.Log("Alive");
-    }
+
     public void GameOver()
     {
-        GameOverScript.Setup();
+        GameOverBackGround.gameObject.SetActive(true);
         PlayerController.gameObject.SetActive(false);
-        Debug.Log("GameOver");
     }
     public void Pause()
     {
-        PauseScript.PopUp();
-        Time.timeScale = 0f;
-        Debug.Log("Paused");
+        PauseScript.gameObject.SetActive(true);
+        PlayerController.enabled = false;
     }
     public void Resume()
     {
         playerState = PlayerState.Alive;
-        PauseScript.PopOut();
-        Debug.Log("resume");
-
+        PauseScript.gameObject.SetActive(false);
+        PlayerController.enabled = true;
     }
     public void RestartButton()
     {
-        SceneManager.LoadScene("Level_1");
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         Debug.Log("Level1");
     }
     public void ExitButton()
     {
         SceneManager.LoadScene("Menu");
-        Debug.Log("Menu");
     }
 
 }

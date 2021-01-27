@@ -16,11 +16,7 @@ public class Respawn : MonoBehaviour
         {
             gameController = gameControllerObject.GetComponent<GameController>();
         }
-        /*GameObject PlayerControllerObject = GameObject.FindWithTag("Player_controller");
-        if (PlayerControllerObject != null)
-        {
-            PlayerController = PlayerControllerObject.GetComponent<Player_controller>();
-        }*/
+
 
     }
 

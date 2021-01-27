@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
+using TMPro;
 
 public class Player_controller : MonoBehaviour
 {
     [SerializeField] public LayerMask groundLayerMask;
-    [SerializeField] public LayerMask PlatformLayerMask;
+
     public float jumpHeight;
     public float speed;
 
@@ -16,15 +18,27 @@ public class Player_controller : MonoBehaviour
     private Rigidbody2D rigidbody2d;
     private BoxCollider2D boxCollider2D;
 
+    private TilemapRenderer GroundMaterial;
+    private TilemapRenderer PlatformMaterial;
+    private TilemapRenderer WallMaterial;
+    private TilemapRenderer DecorMaterial;
+
     private SpriteRenderer Sprite;
     public Animator animator;
 
-    public TilemapRenderer GroundFloor;
-    public TilemapRenderer Platforms;
-    public TilemapRenderer Walls;
+    public GameObject GroundFloor;
+    public GameObject Platforms;
+    public GameObject Walls;
+    public GameObject Decor;
+
+    public TextMeshProUGUI ScoreText;
+
+    private int count;
+    public int TotalDiamonds;
 
     public CharacterState characterState;
     public VisionState visionState;
+
 
     public enum CharacterState
     { 
@@ -38,7 +52,8 @@ public class Player_controller : MonoBehaviour
         Standard,
         Ground,
         Platform,
-        Wall
+        Wall,
+        Decor
     }
 
 
@@ -49,10 +64,25 @@ public class Player_controller : MonoBehaviour
     }
     void Start()
     {
+        ScoreText = GameObject.FindWithTag("Score").GetComponent<TextMeshProUGUI>();
+
+        GroundFloor = GameObject.FindWithTag("Ground");
+        Platforms = GameObject.FindWithTag("Platforms");
+        Walls = GameObject.FindWithTag("Wall");
+        Decor = GameObject.FindWithTag("Decor");
+
+        GroundMaterial = GroundFloor.GetComponent<TilemapRenderer>();
+        PlatformMaterial = Platforms.GetComponent<TilemapRenderer>();
+        WallMaterial = Walls.GetComponent<TilemapRenderer>();
+        DecorMaterial = Decor.GetComponent<TilemapRenderer>();
+
         rigidbody2d = transform.GetComponent<Rigidbody2D>();
         boxCollider2D = transform.GetComponent<BoxCollider2D>();
         Sprite = transform.GetComponent<SpriteRenderer>();
+
+        SetCountText();
     }
+    
     void FixedUpdate()
     {
         AnimatorGroundCheck();
@@ -60,7 +90,6 @@ public class Player_controller : MonoBehaviour
         switch (characterState)
         {
             case CharacterState.Idle:
-                Idle();
                 if (Input.GetAxisRaw("Horizontal") != 0)
                 {
                     characterState = CharacterState.Walking;
@@ -69,6 +98,7 @@ public class Player_controller : MonoBehaviour
             case CharacterState.Walking:
                 Walking();
                 break;
+
         }
     }
     void Update()
@@ -77,7 +107,6 @@ public class Player_controller : MonoBehaviour
         switch (characterState)
         {
             case CharacterState.Idle:
-                Idle();
                 if (IsGrounded() && Input.GetKeyDown(KeyCode.Space))
                 {
                     characterState = CharacterState.Jumping;
@@ -111,6 +140,10 @@ public class Player_controller : MonoBehaviour
                 {
                     visionState = VisionState.Wall;
                 }
+                if (Input.GetKeyDown(KeyCode.J))
+                {
+                    visionState = VisionState.Decor;
+                }
                 break;
             case VisionState.Ground:
                 GroundVision();
@@ -133,6 +166,13 @@ public class Player_controller : MonoBehaviour
                     visionState = VisionState.Standard;
                 }
                 break;
+            case VisionState.Decor:
+                DecorVision();
+                if (Input.GetKeyDown(KeyCode.J))
+                {
+                    visionState = VisionState.Standard;
+                }
+                break;
         }
     }
 
@@ -151,10 +191,6 @@ public class Player_controller : MonoBehaviour
 
         }
         ///------------------------------- Character States--------------------------------------
-        void Idle()
-        {
-
-        }
         void Jumping()
         {
             animator.SetBool("IsJumping", true);
@@ -177,33 +213,56 @@ public class Player_controller : MonoBehaviour
         }
         ///-----------------------------------------VisionStates-------------------------------------
         void Standard()
-        {
-            //Debug.Log("Log");
-            Platforms.material = Diffuse;
-            GroundFloor.material = Diffuse;
-            Walls.material = Diffuse;
+        { 
+            PlatformMaterial.material = Diffuse;
+            GroundMaterial.material = Diffuse;
+            WallMaterial.material = Diffuse;
+            DecorMaterial.material = Diffuse;
         }
 
         void PlatformVision()
         {
-            //Debug.Log("eeeee");
-            Platforms.material = DefaultMaterial;
+        
+            PlatformMaterial.material = DefaultMaterial;
         }
         void GroundVision()
         {
-            //Debug.Log("AA");
-            GroundFloor.material = DefaultMaterial;
+            
+            GroundMaterial.material = DefaultMaterial;
         }
         void WallVision()
         {
-            Walls.material = DefaultMaterial; 
+            WallMaterial.material = DefaultMaterial; 
         }
-        //--------------- Ground Check---------------------------------------------------
-        private bool IsGrounded()
+        void DecorVision()
+        {
+            DecorMaterial.material = DefaultMaterial;
+        }
+
+    ///-------------------------Een systeem waar de player de diamanten kan oppakkken------------------------
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Diamond"))
+        {       
+            Destroy(other.gameObject);
+            count = count + 1;
+            ScoreText.text = count.ToString() + "/" + TotalDiamonds;
+
+        }
+    }
+    ///--------------------------Een systeem dat de score laar zien-------------------------
+    void SetCountText()
+    {
+        ScoreText.text = count.ToString() + "/" + TotalDiamonds;
+    }
+
+            //--------------- Ground Check---------------------------------------------------
+    private bool IsGrounded()
         {
             float Height = 0.1f;
             RaycastHit2D raycastHit = Physics2D.BoxCast(boxCollider2D.bounds.center, boxCollider2D.bounds.size, 0f, Vector2.down, Height, groundLayerMask);
             return raycastHit.collider != null;
         }    
+        
 }
 

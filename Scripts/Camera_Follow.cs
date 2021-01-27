@@ -10,7 +10,10 @@ public class Camera_Follow : MonoBehaviour
     public float smoothFactor;
     public Vector3 minValues, maxValue;
 
-
+    void Start()
+    {
+        player = GameObject.FindWithTag("Player").transform;
+    }
     void LateUpdate()
     { 
         Follow();        
