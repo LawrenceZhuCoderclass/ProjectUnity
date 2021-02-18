@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - Decor
+  - Platforms
+  - Ground
+  - Wall
+  - Objective
+  - Diamond
+  - GameOverBackGround
+  - Pause
+  - YouWin
+  - Score
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Player
+  - Ground
+  - Wall
+  - Platform
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: backGround1
+    uniqueID: 3543836765
+    locked: 0
+  - name: Background2
+    uniqueID: 2222555955
+    locked: 0
+  - name: ForeGround
+    uniqueID: 1233239607
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Player
+    uniqueID: 2881763149
+    locked: 0
